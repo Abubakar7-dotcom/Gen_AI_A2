@@ -1,0 +1,20 @@
+name: ft_0p5b_r16
+base_model: Qwen/Qwen2.5-0.5B-Instruct
+output_dir: outputs/ft_0p5b_r16
+seed: 42
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+lr: 2.0e-4
+weight_decay: 0.0
+warmup_ratio: 0.05
+epochs: 3
+batch_size: 4          # micro-batch
+grad_accum: 4          # effective batch 16
+max_grad_norm: 1.0
+max_len: 1024          # longest train example: 621 prompt + 37 target tokens -> no truncation
+gradient_checkpointing: true
+eval_batch_size: 16
+eval_max_new_tokens: 64

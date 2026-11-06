@@ -1,0 +1,15 @@
+{
+  "data": 9.8,
+  "tests": 54.7,
+  "eval_base_1p5b": 92.7,
+  "eval_base_0p5b": 51.9,
+  "train_1p5b_r16": 836.3,
+  "train_1p5b_r8": 834.2,
+  "train_0p5b_r16": 383.4,
+  "eval_ft_1p5b_r16": 61.4,
+  "eval_ft_1p5b_r8": 63.4,
+  "eval_ft_0p5b_r16": 35.8,
+  "bench_kv_1p5b_half": 997.2,
+  "bench_kv_1p5b_fp32": 362.4,
+  "bench_attention": 29.1
+}

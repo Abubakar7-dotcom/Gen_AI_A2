@@ -1,0 +1,50 @@
+/usr/local/lib/python3.13/dist-packages/pandas/core/arrays/masked.py:63: UserWarning: Pandas requires version '1.5.0' or newer of 'bottleneck' (version '1.4.2' currently installed).
+  from pandas.core import (
+
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/338 [00:00<04:20,  1.29it/s]
+Loading weights:  22%|██▏       | 75/338 [00:00<00:02, 113.65it/s]
+Loading weights:  33%|███▎      | 113/338 [00:01<00:01, 119.15it/s]
+Loading weights:  41%|████▏     | 140/338 [00:01<00:01, 130.61it/s]
+Loading weights:  48%|████▊     | 163/338 [00:01<00:01, 133.34it/s]
+Loading weights:  54%|█████▍    | 183/338 [00:01<00:01, 140.30it/s]
+Loading weights:  60%|█████▉    | 202/338 [00:01<00:01, 135.26it/s]
+Loading weights:  65%|██████▍   | 219/338 [00:01<00:00, 136.76it/s]
+Loading weights:  70%|██████▉   | 235/338 [00:02<00:00, 136.42it/s]
+Loading weights:  74%|███████▍  | 251/338 [00:02<00:00, 139.74it/s]
+Loading weights:  79%|███████▉  | 267/338 [00:02<00:00, 129.21it/s]
+Loading weights:  83%|████████▎ | 281/338 [00:02<00:00, 126.35it/s]
+Loading weights:  90%|████████▉ | 303/338 [00:02<00:00, 135.02it/s]
+Loading weights:  94%|█████████▍| 317/338 [00:02<00:00, 120.23it/s]
+Loading weights: 100%|██████████| 338/338 [00:02<00:00, 121.63it/s]
+[transformers] `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+device=cuda dtype=torch.float16 micro-batch=4 x accum=4 trainable=9,232,384 / 1,552,946,688 (0.59%)
+GPU: Tesla T4, 15.6 GB
+peak GPU memory after first micro-batch: 3.53 GB
+ep 1 step 5/114 loss 0.3152 (24s)
+ep 1 step 10/114 loss 0.1593 (50s)
+ep 1 step 15/114 loss 0.1536 (77s)
+ep 1 step 20/114 loss 0.1785 (102s)
+ep 1 step 25/114 loss 0.1112 (128s)
+ep 1 step 30/114 loss 0.0983 (156s)
+ep 1 step 35/114 loss 0.0816 (180s)
+{"epoch": 1, "step": 38, "val_loss": 0.148824166272104, "val_accuracy": 0.6262135922330098, "val_macro_f1": 0.3319214964568758, "val_evidence_micro_f1": 0.2728904847396768, "val_output_validity": {"parse_failures": 0, "invalid_labels": 0, "records_with_unsupported_ids": 0}, "elapsed_s": 279.5}
+ep 2 step 40/114 loss 0.1054 (290s)
+ep 2 step 45/114 loss 0.0907 (317s)
+ep 2 step 50/114 loss 0.1127 (342s)
+ep 2 step 55/114 loss 0.0758 (367s)
+ep 2 step 60/114 loss 0.1201 (393s)
+ep 2 step 65/114 loss 0.1326 (422s)
+ep 2 step 70/114 loss 0.1221 (446s)
+ep 2 step 75/114 loss 0.0218 (472s)
+{"epoch": 2, "step": 76, "val_loss": 0.13116812791504065, "val_accuracy": 0.7281553398058253, "val_macro_f1": 0.46231933152664867, "val_evidence_micro_f1": 0.5691056910569106, "val_output_validity": {"parse_failures": 0, "invalid_labels": 0, "records_with_unsupported_ids": 0}, "elapsed_s": 544.2}
+ep 3 step 80/114 loss 0.0711 (565s)
+ep 3 step 85/114 loss 0.1034 (590s)
+ep 3 step 90/114 loss 0.1017 (616s)
+ep 3 step 95/114 loss 0.0460 (641s)
+ep 3 step 100/114 loss 0.0936 (666s)
+ep 3 step 105/114 loss 0.0825 (695s)
+ep 3 step 110/114 loss 0.0671 (720s)
+{"epoch": 3, "step": 114, "val_loss": 0.13229650218206157, "val_accuracy": 0.7330097087378641, "val_macro_f1": 0.47100085709833256, "val_evidence_micro_f1": 0.52, "val_output_validity": {"parse_failures": 0, "invalid_labels": 0, "records_with_unsupported_ids": 0}, "elapsed_s": 813.5}
+done: best val macro-F1 0.471 at epoch 3 -> /content/trialmatch/outputs/ft_1p5b_r8/best

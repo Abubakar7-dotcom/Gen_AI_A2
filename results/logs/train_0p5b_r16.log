@@ -1,0 +1,44 @@
+/usr/local/lib/python3.13/dist-packages/pandas/core/arrays/masked.py:63: UserWarning: Pandas requires version '1.5.0' or newer of 'bottleneck' (version '1.4.2' currently installed).
+  from pandas.core import (
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/290 [00:02<10:33,  2.19s/it]
+Loading weights:  39%|███▉      | 113/290 [00:02<00:02, 68.00it/s]
+Loading weights:  58%|█████▊    | 167/290 [00:02<00:01, 81.35it/s]
+Loading weights:  70%|██████▉   | 202/290 [00:03<00:01, 85.75it/s]
+Loading weights:  78%|███████▊  | 227/290 [00:03<00:00, 89.43it/s]
+Loading weights:  85%|████████▌ | 247/290 [00:03<00:00, 88.63it/s]
+Loading weights:  91%|█████████ | 263/290 [00:03<00:00, 93.61it/s]
+Loading weights:  96%|█████████▌| 278/290 [00:03<00:00, 100.35it/s]
+Loading weights: 100%|██████████| 290/290 [00:03<00:00, 73.35it/s] 
+[transformers] `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+device=cuda dtype=torch.float16 micro-batch=4 x accum=4 trainable=8,798,208 / 502,830,976 (1.75%)
+GPU: Tesla T4, 15.6 GB
+peak GPU memory after first micro-batch: 1.26 GB
+ep 1 step 5/114 loss 0.3204 (10s)
+ep 1 step 10/114 loss 0.1806 (20s)
+ep 1 step 15/114 loss 0.1730 (31s)
+ep 1 step 20/114 loss 0.2168 (42s)
+ep 1 step 25/114 loss 0.1276 (52s)
+ep 1 step 30/114 loss 0.0761 (63s)
+ep 1 step 35/114 loss 0.0866 (73s)
+{"epoch": 1, "step": 38, "val_loss": 0.16361517917072108, "val_accuracy": 0.3592233009708738, "val_macro_f1": 0.2015701956675887, "val_evidence_micro_f1": 0.40366972477064217, "val_output_validity": {"parse_failures": 0, "invalid_labels": 0, "records_with_unsupported_ids": 0}, "elapsed_s": 118.5}
+ep 2 step 40/114 loss 0.0923 (123s)
+ep 2 step 45/114 loss 0.0961 (134s)
+ep 2 step 50/114 loss 0.1088 (144s)
+ep 2 step 55/114 loss 0.0830 (154s)
+ep 2 step 60/114 loss 0.1361 (164s)
+ep 2 step 65/114 loss 0.1283 (176s)
+ep 2 step 70/114 loss 0.1372 (186s)
+ep 2 step 75/114 loss 0.0429 (196s)
+{"epoch": 2, "step": 76, "val_loss": 0.14415115901224382, "val_accuracy": 0.7427184466019418, "val_macro_f1": 0.4274170274170274, "val_evidence_micro_f1": 0.3986710963455149, "val_output_validity": {"parse_failures": 0, "invalid_labels": 0, "records_with_unsupported_ids": 0}, "elapsed_s": 241.7}
+ep 3 step 80/114 loss 0.0715 (250s)
+ep 3 step 85/114 loss 0.1116 (261s)
+ep 3 step 90/114 loss 0.1172 (272s)
+ep 3 step 95/114 loss 0.0493 (283s)
+ep 3 step 100/114 loss 0.0903 (292s)
+ep 3 step 105/114 loss 0.0950 (304s)
+ep 3 step 110/114 loss 0.0796 (314s)
+{"epoch": 3, "step": 114, "val_loss": 0.14518899796333226, "val_accuracy": 0.7427184466019418, "val_macro_f1": 0.4331754119364739, "val_evidence_micro_f1": 0.3870967741935484, "val_output_validity": {"parse_failures": 0, "invalid_labels": 0, "records_with_unsupported_ids": 0}, "elapsed_s": 365.2}
+done: best val macro-F1 0.433 at epoch 3 -> /content/trialmatch/outputs/ft_0p5b_r16/best

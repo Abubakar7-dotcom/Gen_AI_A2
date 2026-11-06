@@ -1,0 +1,84 @@
+{
+  "config": {
+    "name": "ft_1p5b_r8",
+    "base_model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "output_dir": "outputs/ft_1p5b_r8",
+    "seed": 42,
+    "lora": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0.05,
+      "target_modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj"
+      ]
+    },
+    "lr": 0.0002,
+    "weight_decay": 0.0,
+    "warmup_ratio": 0.05,
+    "epochs": 3,
+    "batch_size": 4,
+    "grad_accum": 4,
+    "max_grad_norm": 1.0,
+    "max_len": 1024,
+    "gradient_checkpointing": true,
+    "eval_batch_size": 16,
+    "eval_max_new_tokens": 64
+  },
+  "trainable_params": 9232384,
+  "total_params": 1552946688,
+  "device": "cuda",
+  "gpu": "Tesla T4",
+  "peak_gpu_mem_gb": 4.18,
+  "epochs": [
+    {
+      "epoch": 1,
+      "step": 38,
+      "val_loss": 0.148824166272104,
+      "val_accuracy": 0.6262135922330098,
+      "val_macro_f1": 0.3319214964568758,
+      "val_evidence_micro_f1": 0.2728904847396768,
+      "val_output_validity": {
+        "parse_failures": 0,
+        "invalid_labels": 0,
+        "records_with_unsupported_ids": 0
+      },
+      "elapsed_s": 279.5
+    },
+    {
+      "epoch": 2,
+      "step": 76,
+      "val_loss": 0.13116812791504065,
+      "val_accuracy": 0.7281553398058253,
+      "val_macro_f1": 0.46231933152664867,
+      "val_evidence_micro_f1": 0.5691056910569106,
+      "val_output_validity": {
+        "parse_failures": 0,
+        "invalid_labels": 0,
+        "records_with_unsupported_ids": 0
+      },
+      "elapsed_s": 544.2
+    },
+    {
+      "epoch": 3,
+      "step": 114,
+      "val_loss": 0.13229650218206157,
+      "val_accuracy": 0.7330097087378641,
+      "val_macro_f1": 0.47100085709833256,
+      "val_evidence_micro_f1": 0.52,
+      "val_output_validity": {
+        "parse_failures": 0,
+        "invalid_labels": 0,
+        "records_with_unsupported_ids": 0
+      },
+      "elapsed_s": 813.5
+    }
+  ],
+  "best_val_macro_f1": 0.47100085709833256,
+  "best_epoch": 3
+}

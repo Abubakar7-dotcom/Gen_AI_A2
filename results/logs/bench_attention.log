@@ -1,0 +1,37 @@
+/usr/local/lib/python3.13/dist-packages/pandas/core/arrays/masked.py:63: UserWarning: Pandas requires version '1.5.0' or newer of 'bottleneck' (version '1.4.2' currently installed).
+  from pandas.core import (
+{"device": "cuda", "dtype": "torch.float16", "torch": "2.11.0+cu130", "platform": "Linux-6.6.159+-x86_64-with-glibc2.39", "gpu": "Tesla T4", "warmup": 2, "repeats": 5}
+== Part A: numerical error vs float64 truth (CPU)
+  reference  float16  worst max-abs-err 9.73e-04
+  reference  float32  worst max-abs-err 9.44e-07
+  tiled      float16  worst max-abs-err 9.73e-04
+  tiled      float32  worst max-abs-err 9.55e-07
+  torch_sdpa float16  worst max-abs-err 9.73e-04
+  torch_sdpa float32  worst max-abs-err 9.72e-07
+== Part B: speed / memory on cuda (torch.float16)
+N=  256 reference         0.66 ms  peak+    10.5 MiB
+N=  256 tiled_b64         4.29 ms  peak+     5.3 MiB
+N=  256 tiled_b128        1.79 ms  peak+     8.3 MiB
+N=  256 torch_sdpa        0.16 ms  peak+     2.2 MiB
+N=  512 reference         1.70 ms  peak+    39.0 MiB
+N=  512 tiled_b64        12.80 ms  peak+     8.6 MiB
+N=  512 tiled_b128        4.32 ms  peak+    11.3 MiB
+N=  512 torch_sdpa        0.29 ms  peak+     4.5 MiB
+N= 1024 reference         5.67 ms  peak+   150.0 MiB
+N= 1024 tiled_b64        43.19 ms  peak+    16.1 MiB
+N= 1024 tiled_b128       13.62 ms  peak+    18.0 MiB
+N= 1024 torch_sdpa        0.48 ms  peak+     9.0 MiB
+N= 2048 reference        16.70 ms  peak+   588.1 MiB
+N= 2048 tiled_b64       210.57 ms  peak+    31.1 MiB
+N= 2048 tiled_b128       56.28 ms  peak+    33.0 MiB
+N= 2048 torch_sdpa        1.20 ms  peak+    18.0 MiB
+N= 4096 reference        67.39 ms  peak+  2328.2 MiB
+N= 4096 tiled_b64       615.86 ms  peak+    61.1 MiB
+N= 4096 tiled_b128      157.99 ms  peak+    63.0 MiB
+N= 4096 torch_sdpa        3.12 ms  peak+    36.0 MiB
+== Part C: tile-size sweep at N=2048
+block=  32    626.92 ms  {'blocks_computed': 2080, 'blocks_skipped': 2016}
+block=  64    231.01 ms  {'blocks_computed': 528, 'blocks_skipped': 496}
+block= 128     43.97 ms  {'blocks_computed': 136, 'blocks_skipped': 120}
+block= 256     13.16 ms  {'blocks_computed': 36, 'blocks_skipped': 28}
+-> /content/trialmatch/results/bench/attention_gpu*

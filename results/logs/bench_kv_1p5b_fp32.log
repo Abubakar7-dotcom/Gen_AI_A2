@@ -1,0 +1,34 @@
+/usr/local/lib/python3.13/dist-packages/pandas/core/arrays/masked.py:63: UserWarning: Pandas requires version '1.5.0' or newer of 'bottleneck' (version '1.4.2' currently installed).
+  from pandas.core import (
+
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/338 [00:00<04:37,  1.21it/s]
+Loading weights:  22%|██▏       | 75/338 [00:00<00:02, 108.18it/s]
+Loading weights:  34%|███▎      | 114/338 [00:01<00:01, 115.93it/s]
+Loading weights:  42%|████▏     | 141/338 [00:01<00:01, 126.24it/s]
+Loading weights:  49%|████▊     | 164/338 [00:01<00:01, 123.90it/s]
+Loading weights:  54%|█████▍    | 183/338 [00:01<00:01, 115.36it/s]
+Loading weights:  59%|█████▉    | 199/338 [00:02<00:01, 104.23it/s]
+Loading weights:  63%|██████▎   | 212/338 [00:02<00:01, 98.38it/s] 
+Loading weights:  66%|██████▋   | 224/338 [00:02<00:01, 96.03it/s]
+Loading weights:  72%|███████▏  | 243/338 [00:02<00:00, 96.70it/s]
+Loading weights:  76%|███████▌  | 256/338 [00:02<00:00, 89.92it/s]
+Loading weights:  79%|███████▊  | 266/338 [00:02<00:00, 91.21it/s]
+Loading weights:  82%|████████▏ | 276/338 [00:02<00:00, 79.32it/s]
+Loading weights:  84%|████████▍ | 285/338 [00:03<00:00, 64.08it/s]
+Loading weights:  86%|████████▋ | 292/338 [00:03<00:00, 63.57it/s]
+Loading weights:  90%|████████▉ | 303/338 [00:03<00:00, 59.98it/s]
+Loading weights:  92%|█████████▏| 310/338 [00:03<00:00, 56.48it/s]
+Loading weights:  93%|█████████▎| 316/338 [00:03<00:00, 53.12it/s]
+Loading weights:  95%|█████████▌| 322/338 [00:03<00:00, 45.35it/s]
+Loading weights:  97%|█████████▋| 327/338 [00:04<00:00, 41.97it/s]
+Loading weights:  98%|█████████▊| 332/338 [00:04<00:00, 33.98it/s]
+Loading weights: 100%|██████████| 338/338 [00:04<00:00, 77.05it/s]
+{"model": "Qwen/Qwen2.5-1.5B-Instruct", "dtype": "torch.float32", "device": "cuda", "torch": "2.11.0+cu130", "platform": "Linux-6.6.159+-x86_64-with-glibc2.39", "warmup": 0, "repeats": 1, "gpu": "Tesla T4"}
+in=  128 out=  32 | no-cache     6877 ms | kv     1455 ms | speedup  4.72x | equal=True
+in=  128 out= 128 | no-cache    32541 ms | kv     5895 ms | speedup  5.52x | equal=True
+in=  512 out=  32 | no-cache    18988 ms | kv     1686 ms | speedup 11.26x | equal=True
+in=  512 out= 128 | no-cache    77745 ms | kv     6184 ms | speedup 12.57x | equal=True
+in= 1024 out=  32 | no-cache    37184 ms | kv     2345 ms | speedup 15.86x | equal=True
+in= 1024 out= 128 | no-cache   145819 ms | kv     5948 ms | speedup 24.52x | equal=True
+token-equal configurations: 6/6 -> /content/trialmatch/results/bench/kv_gpu_1p5b_fp32.csv

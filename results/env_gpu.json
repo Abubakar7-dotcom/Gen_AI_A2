@@ -1,0 +1,13 @@
+{
+  "python": "3.13.16",
+  "os": "Linux-6.6.159+-x86_64-with-glibc2.39",
+  "torch": "2.11.0+cu130",
+  "cuda_available": true,
+  "torch_cuda": "13.0",
+  "transformers": "5.22.1",
+  "peft": "0.21.2",
+  "gpu": "Tesla T4",
+  "vram_gb": 15.64,
+  "bf16_native": false,
+  "compute_capability": "7.5"
+}

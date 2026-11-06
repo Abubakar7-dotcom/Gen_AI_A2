@@ -1,0 +1,57 @@
+/usr/local/lib/python3.13/dist-packages/pandas/core/arrays/masked.py:63: UserWarning: Pandas requires version '1.5.0' or newer of 'bottleneck' (version '1.4.2' currently installed).
+  from pandas.core import (
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Split OK (no patient leakage). Manifest -> data/split_manifest.json
+  train: 37 patients, 602 rows, 348 with empty gold evidence
+  val  : 8 patients, 206 rows, 116 with empty gold evidence
+  test : 8 patients, 206 rows, 145 with empty gold evidence
+  dropped rows: [{'annotation_id': 883, 'patient_id': 'sigir-201519', 'reason': 'empty criterion_text'}]
+  trial overlap: {'train&val': 1, 'train&test': 0, 'val&test': 0}
+{
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "max_prompt_tokens": 1536,
+  "splits": {
+    "train": {
+      "prompt_tokens": {
+        "min": 251,
+        "median": 314.5,
+        "p95": 504.89999999999986,
+        "max": 621
+      },
+      "target_tokens": {
+        "min": 12,
+        "max": 37
+      },
+      "n_truncated": 0,
+      "gold_evidence_ids_lost_to_truncation": 0
+    },
+    "val": {
+      "prompt_tokens": {
+        "min": 290,
+        "median": 355.5,
+        "p95": 402.0,
+        "max": 459
+      },
+      "target_tokens": {
+        "min": 12,
+        "max": 24
+      },
+      "n_truncated": 0,
+      "gold_evidence_ids_lost_to_truncation": 0
+    },
+    "test": {
+      "prompt_tokens": {
+        "min": 263,
+        "median": 315.5,
+        "p95": 386.75,
+        "max": 525
+      },
+      "target_tokens": {
+        "min": 13,
+        "max": 27
+      },
+      "n_truncated": 0,
+      "gold_evidence_ids_lost_to_truncation": 0
+    }
+  }
+}

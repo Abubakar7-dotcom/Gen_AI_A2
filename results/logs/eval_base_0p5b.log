@@ -1,0 +1,25 @@
+/usr/local/lib/python3.13/dist-packages/pandas/core/arrays/masked.py:63: UserWarning: Pandas requires version '1.5.0' or newer of 'bottleneck' (version '1.4.2' currently installed).
+  from pandas.core import (
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/290 [00:00<02:09,  2.23it/s]
+Loading weights:  51%|█████▏    | 149/290 [00:00<00:00, 350.27it/s]
+Loading weights:  79%|███████▉  | 229/290 [00:00<00:00, 394.82it/s]
+Loading weights: 100%|██████████| 290/290 [00:00<00:00, 338.25it/s]
+
+generate:   0%|          | 0/13 [00:00<?, ?it/s]
+generate:   8%|▊         | 1/13 [00:03<00:38,  3.20s/it]
+generate:  15%|█▌        | 2/13 [00:06<00:33,  3.00s/it]
+generate:  23%|██▎       | 3/13 [00:08<00:27,  2.76s/it]
+generate:  31%|███       | 4/13 [00:11<00:24,  2.68s/it]
+generate:  38%|███▊      | 5/13 [00:13<00:20,  2.62s/it]
+generate:  46%|████▌     | 6/13 [00:16<00:19,  2.76s/it]
+generate:  54%|█████▍    | 7/13 [00:19<00:16,  2.82s/it]
+generate:  62%|██████▏   | 8/13 [00:22<00:13,  2.73s/it]
+generate:  69%|██████▉   | 9/13 [00:24<00:10,  2.68s/it]
+generate:  77%|███████▋  | 10/13 [00:27<00:07,  2.64s/it]
+generate:  85%|████████▍ | 11/13 [00:30<00:05,  2.74s/it]
+generate:  92%|█████████▏| 12/13 [00:33<00:02,  2.76s/it]
+generate: 100%|██████████| 13/13 [00:35<00:00,  2.71s/it]
+generate: 100%|██████████| 13/13 [00:35<00:00,  2.74s/it]
+[base_0p5b_val] acc=0.194 macroF1=0.133 incl macroF1=0.179 excl macroF1=0.022 evid microF1=0.000 macroF1=0.563 invalid={'parse_failures': 136, 'invalid_labels': 0, 'records_with_unsupported_ids': 0} (36s)

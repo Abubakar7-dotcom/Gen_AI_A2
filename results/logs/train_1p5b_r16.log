@@ -1,0 +1,61 @@
+/usr/local/lib/python3.13/dist-packages/pandas/core/arrays/masked.py:63: UserWarning: Pandas requires version '1.5.0' or newer of 'bottleneck' (version '1.4.2' currently installed).
+  from pandas.core import (
+
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/338 [00:00<03:55,  1.43it/s]
+Loading weights:  12%|█▏        | 39/338 [00:00<00:05, 53.50it/s]
+Loading weights:  14%|█▍        | 49/338 [00:01<00:05, 53.46it/s]
+Loading weights:  17%|█▋        | 57/338 [00:01<00:06, 42.09it/s]
+Loading weights:  19%|█▊        | 63/338 [00:01<00:07, 38.48it/s]
+Loading weights:  20%|██        | 68/338 [00:01<00:07, 33.91it/s]
+Loading weights:  22%|██▏       | 76/338 [00:02<00:07, 35.45it/s]
+Loading weights:  26%|██▌       | 87/338 [00:02<00:06, 38.80it/s]
+Loading weights:  33%|███▎      | 111/338 [00:02<00:03, 68.88it/s]
+Loading weights:  37%|███▋      | 125/338 [00:02<00:02, 75.12it/s]
+Loading weights:  43%|████▎     | 147/338 [00:02<00:01, 98.99it/s]
+Loading weights:  48%|████▊     | 161/338 [00:02<00:01, 98.60it/s]
+Loading weights:  54%|█████▍    | 183/338 [00:02<00:01, 120.76it/s]
+Loading weights:  58%|█████▊    | 197/338 [00:03<00:01, 107.24it/s]
+Loading weights:  62%|██████▏   | 209/338 [00:03<00:01, 107.20it/s]
+Loading weights:  65%|██████▌   | 221/338 [00:03<00:01, 85.84it/s] 
+Loading weights:  68%|██████▊   | 231/338 [00:03<00:01, 80.09it/s]
+Loading weights:  71%|███████   | 240/338 [00:03<00:01, 73.45it/s]
+Loading weights:  75%|███████▌  | 255/338 [00:03<00:01, 82.74it/s]
+Loading weights:  78%|███████▊  | 264/338 [00:04<00:00, 83.41it/s]
+Loading weights:  81%|████████  | 273/338 [00:04<00:00, 70.75it/s]
+Loading weights:  83%|████████▎ | 281/338 [00:04<00:00, 67.52it/s]
+Loading weights:  90%|████████▉ | 303/338 [00:04<00:00, 90.57it/s]
+Loading weights:  93%|█████████▎| 316/338 [00:04<00:00, 95.19it/s]
+Loading weights:  97%|█████████▋| 329/338 [00:04<00:00, 102.55it/s]
+Loading weights: 100%|██████████| 338/338 [00:04<00:00, 71.51it/s] 
+[transformers] `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+device=cuda dtype=torch.float16 micro-batch=4 x accum=4 trainable=18,464,768 / 1,562,179,072 (1.18%)
+GPU: Tesla T4, 15.6 GB
+peak GPU memory after first micro-batch: 3.56 GB
+ep 1 step 5/114 loss 0.2592 (23s)
+ep 1 step 10/114 loss 0.1611 (47s)
+ep 1 step 15/114 loss 0.1563 (75s)
+ep 1 step 20/114 loss 0.1591 (100s)
+ep 1 step 25/114 loss 0.0892 (126s)
+ep 1 step 30/114 loss 0.0817 (153s)
+ep 1 step 35/114 loss 0.0863 (178s)
+{"epoch": 1, "step": 38, "val_loss": 0.14367311289227278, "val_accuracy": 0.6504854368932039, "val_macro_f1": 0.34517248418044505, "val_evidence_micro_f1": 0.33476394849785407, "val_output_validity": {"parse_failures": 0, "invalid_labels": 0, "records_with_unsupported_ids": 0}, "elapsed_s": 275.9}
+ep 2 step 40/114 loss 0.0889 (287s)
+ep 2 step 45/114 loss 0.0889 (313s)
+ep 2 step 50/114 loss 0.1000 (338s)
+ep 2 step 55/114 loss 0.0665 (363s)
+ep 2 step 60/114 loss 0.1118 (389s)
+ep 2 step 65/114 loss 0.1144 (419s)
+ep 2 step 70/114 loss 0.0951 (443s)
+ep 2 step 75/114 loss 0.0180 (469s)
+{"epoch": 2, "step": 76, "val_loss": 0.12631929663131708, "val_accuracy": 0.7427184466019418, "val_macro_f1": 0.552198618375089, "val_evidence_micro_f1": 0.5349794238683129, "val_output_validity": {"parse_failures": 0, "invalid_labels": 0, "records_with_unsupported_ids": 0}, "elapsed_s": 543.0}
+ep 3 step 80/114 loss 0.0463 (564s)
+ep 3 step 85/114 loss 0.0907 (589s)
+ep 3 step 90/114 loss 0.0804 (616s)
+ep 3 step 95/114 loss 0.0425 (641s)
+ep 3 step 100/114 loss 0.0738 (666s)
+ep 3 step 105/114 loss 0.0600 (695s)
+ep 3 step 110/114 loss 0.0487 (720s)
+{"epoch": 3, "step": 114, "val_loss": 0.13132380413084027, "val_accuracy": 0.7330097087378641, "val_macro_f1": 0.5399544057884825, "val_evidence_micro_f1": 0.5121107266435986, "val_output_validity": {"parse_failures": 0, "invalid_labels": 0, "records_with_unsupported_ids": 0}, "elapsed_s": 815.2}
+done: best val macro-F1 0.552 at epoch 2 -> /content/trialmatch/outputs/ft_1p5b_r16/best
