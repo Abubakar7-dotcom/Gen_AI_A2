@@ -44,7 +44,20 @@ def steps(batch_size: int | None):
         ("bench_kv_1p5b_fp32", ["-m", "bench.bench_kv", "--model", B15, "--dtype", "fp32", "--inputs", "128", "512", "1024",
                                 "--outputs", "32", "128", "--warmup", "0", "--repeats", "1", "--tag", "gpu_1p5b_fp32"], "results/bench/kv_gpu_1p5b_fp32.json"),
         ("bench_attention", ["-m", "bench.bench_attention", "--device", "cuda", "--tag", "gpu"], "results/bench/attention_gpu.json"),
+        # Phase 6: speculative decoding (fine-tuned 1.5B target; base vs fine-tuned 0.5B draft; k sweep).
+        ("tests_spec", ["-m", "pytest", "-q", "tests/test_spec.py"], None),
+        ("bench_spec", ["-m", "bench.bench_spec", "--tag", "gpu"], "results/bench/spec_gpu.json"),
     ]
+
+
+# Run only with --final, after every choice was frozen on validation (model = ft_1p5b_r16, selected by
+# val macro-F1). Base and fine-tuned are scored once on the identical test rows with the same settings.
+FINAL_STEPS = [
+    ("test_base_1p5b", ["-m", "src.evaluate", "--name", "base_1p5b", "--base", B15, "--split", "test", "--confirm-test"],
+     "results/metrics/base_1p5b_test.json"),
+    ("test_ft_1p5b_r16", ["-m", "src.evaluate", "--name", "ft_1p5b_r16", "--base", B15, "--adapter", "outputs/ft_1p5b_r16/best",
+                          "--split", "test", "--confirm-test"], "results/metrics/ft_1p5b_r16_test.json"),
+]
 
 
 def env_report() -> dict:
@@ -78,9 +91,11 @@ def run(name, args, log_dir: Path) -> float:
 def summary_table() -> str:
     rows = ["| run | split | accuracy | macro-F1 | incl. macro-F1 | excl. macro-F1 | evidence micro-F1 | evidence macro-F1 | parse fail | invalid label |",
             "|---|---|---|---|---|---|---|---|---|---|"]
-    for f in sorted((ROOT / "results" / "metrics").glob("*_val.json")):
+    files = sorted((ROOT / "results" / "metrics").glob("*_val.json")) + sorted((ROOT / "results" / "metrics").glob("*_test.json"))
+    for f in files:
         r = json.loads(f.read_text()); o = r["overall"]; v = r["output_validity"]
-        rows.append(f"| {f.stem[:-4]} | val | {o['accuracy']:.3f} | {o['macro_f1']:.3f} | {r['inclusion']['macro_f1']:.3f} | "
+        run_name, split = f.stem.rsplit("_", 1)
+        rows.append(f"| {run_name} | {split} | {o['accuracy']:.3f} | {o['macro_f1']:.3f} | {r['inclusion']['macro_f1']:.3f} | "
                     f"{r['exclusion']['macro_f1']:.3f} | {r['evidence_all']['micro']['f1']:.3f} | {r['evidence_all']['macro']['f1']:.3f} | "
                     f"{v['parse_failures']} | {v['invalid_labels']} |")
     return "\n".join(rows)
@@ -91,6 +106,7 @@ def main():
     ap.add_argument("--force", action="store_true")
     ap.add_argument("--batch-size", type=int, default=None)
     ap.add_argument("--only", nargs="*", help="run only these step names")
+    ap.add_argument("--final", action="store_true", help="also run the one-time test-split evaluation")
     a = ap.parse_args()
     log_dir = ROOT / "results" / "logs"; log_dir.mkdir(parents=True, exist_ok=True)
     env = env_report()
@@ -99,14 +115,16 @@ def main():
     if not env["cuda_available"]:
         print("WARNING: CUDA not available - this will be very slow. Check the torch install (README).")
     timings = {}
-    for name, args, out in steps(a.batch_size):
+    for name, args, out in steps(a.batch_size) + (FINAL_STEPS if a.final else []):
         if a.only and name not in a.only:
             continue
         if out and (ROOT / out).exists() and not a.force:
             print(f"--- skip {name} (found {out})")
             continue
         timings[name] = round(run(name, args, log_dir), 1)
-    (log_dir / "timings.json").write_text(json.dumps(timings, indent=2))
+    tf = log_dir / "timings.json"   # merge with earlier runs instead of overwriting
+    old = json.loads(tf.read_text()) if tf.exists() else {}
+    tf.write_text(json.dumps({**old, **timings}, indent=2))
     table = summary_table()
     (ROOT / "results" / "val_summary.md").write_text(table + "\n")
     print("\n" + table + f"\n\nstep timings (s): {timings}")
