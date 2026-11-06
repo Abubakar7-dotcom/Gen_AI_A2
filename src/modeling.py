@@ -25,9 +25,16 @@ def pick_device(prefer: str | None = None) -> torch.device:
     return torch.device("cpu")
 
 
+def native_bf16() -> bool:
+    """True only for GPUs with hardware bf16 (compute capability >= 8: Ampere, Ada, Hopper...).
+    torch.cuda.is_bf16_supported() defaults to including_emulation=True and reports True on a T4,
+    where bf16 is emulated and slow."""
+    return torch.cuda.is_available() and torch.cuda.get_device_capability()[0] >= 8
+
+
 def default_dtype(device: torch.device) -> torch.dtype:
     if device.type == "cuda":
-        return torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+        return torch.bfloat16 if native_bf16() else torch.float16
     return torch.float16 if device.type == "mps" else torch.float32
 
 

@@ -29,7 +29,7 @@ def steps(batch_size: int | None):
     return [
         ("data", ["-m", "src.data", "--check", "--token-stats"], None),  # cheap: always re-verify the split
         ("tests", ["-m", "pytest", "-q", "tests/test_split.py", "tests/test_schema.py", "tests/test_metrics.py",
-                   "tests/test_train_loss.py"], None),
+                   "tests/test_train_loss.py", "tests/test_attention.py"], None),
         ("eval_base_1p5b", ["-m", "src.evaluate", "--name", "base_1p5b", "--base", B15, "--split", "val"], f"{m}/base_1p5b_val.json"),
         ("eval_base_0p5b", ["-m", "src.evaluate", "--name", "base_0p5b", "--base", B05, "--split", "val"], f"{m}/base_0p5b_val.json"),
         ("train_1p5b_r16", ["-m", "src.train", "--config", "configs/train_1p5b.yaml", *bs], "results/training/ft_1p5b_r16/summary.json"),
@@ -38,6 +38,12 @@ def steps(batch_size: int | None):
         ("eval_ft_1p5b_r16", ["-m", "src.evaluate", "--name", "ft_1p5b_r16", "--base", B15, "--adapter", "outputs/ft_1p5b_r16/best", "--split", "val"], f"{m}/ft_1p5b_r16_val.json"),
         ("eval_ft_1p5b_r8", ["-m", "src.evaluate", "--name", "ft_1p5b_r8", "--base", B15, "--adapter", "outputs/ft_1p5b_r8/best", "--split", "val"], f"{m}/ft_1p5b_r8_val.json"),
         ("eval_ft_0p5b_r16", ["-m", "src.evaluate", "--name", "ft_0p5b_r16", "--base", B05, "--adapter", "outputs/ft_0p5b_r16/best", "--split", "val"], f"{m}/ft_0p5b_r16_val.json"),
+        # Phase 4/5 benchmarks on CUDA (true peak-memory counters). Base weights: the mechanisms
+        # do not depend on the fine-tuned adapter.
+        ("bench_kv_1p5b_half", ["-m", "bench.bench_kv", "--model", B15, "--tag", "gpu_1p5b_half"], "results/bench/kv_gpu_1p5b_half.json"),
+        ("bench_kv_1p5b_fp32", ["-m", "bench.bench_kv", "--model", B15, "--dtype", "fp32", "--inputs", "128", "512", "1024",
+                                "--outputs", "32", "128", "--warmup", "0", "--repeats", "1", "--tag", "gpu_1p5b_fp32"], "results/bench/kv_gpu_1p5b_fp32.json"),
+        ("bench_attention", ["-m", "bench.bench_attention", "--device", "cuda", "--tag", "gpu"], "results/bench/attention_gpu.json"),
     ]
 
 
@@ -49,7 +55,7 @@ def env_report() -> dict:
     info.update(transformers=transformers.__version__, peft=peft.__version__)
     if torch.cuda.is_available():
         p = torch.cuda.get_device_properties(0)
-        info.update(gpu=p.name, vram_gb=round(p.total_memory / 1e9, 2), bf16=torch.cuda.is_bf16_supported(),
+        info.update(gpu=p.name, vram_gb=round(p.total_memory / 1e9, 2), bf16_native=p.major >= 8,
                     compute_capability=f"{p.major}.{p.minor}")
     return info
 

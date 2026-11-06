@@ -37,7 +37,7 @@ from transformers import AutoModelForCausalLM, get_cosine_schedule_with_warmup
 
 from src.data import ROOT, load_split, prompt_text
 from src.evaluate import evaluate_outputs
-from src.modeling import generate_batch, load_tokenizer, pick_device
+from src.modeling import generate_batch, load_tokenizer, native_bf16, pick_device
 from src.schema import format_target
 
 
@@ -140,7 +140,7 @@ def main():
     use_amp = device.type == "cuda"
     if use_amp:
         torch.backends.cuda.matmul.allow_tf32 = True
-        amp_dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+        amp_dtype = torch.bfloat16 if native_bf16() else torch.float16
     else:
         amp_dtype = torch.float32  # MPS/CPU: plain fp32 (debug runs only)
     amp = (lambda: torch.autocast("cuda", dtype=amp_dtype)) if use_amp else nullcontext
