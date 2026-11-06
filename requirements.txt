@@ -1,0 +1,18 @@
+# Pinned versions used for all experiments (Mac M5/MPS and Kaggle T4/CUDA).
+# On Kaggle keep the preinstalled torch build and install the rest with these pins.
+torch==2.15.0
+transformers==5.22.1
+tokenizers==0.23.3
+peft==0.21.2
+accelerate==1.15.0
+datasets==5.1.0
+huggingface-hub==2.4.0
+safetensors==0.8.0
+gradio==6.31.0
+scikit-learn==1.9.1
+pandas==3.1.1
+numpy==2.4.6
+pyarrow==26.0.1
+matplotlib==3.11.2
+pyyaml==6.0.3
+pytest==9.2.0

@@ -1,0 +1,48 @@
+{
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "max_prompt_tokens": 1536,
+  "splits": {
+    "train": {
+      "prompt_tokens": {
+        "min": 251,
+        "median": 314.5,
+        "p95": 504.89999999999986,
+        "max": 621
+      },
+      "target_tokens": {
+        "min": 12,
+        "max": 37
+      },
+      "n_truncated": 0,
+      "gold_evidence_ids_lost_to_truncation": 0
+    },
+    "val": {
+      "prompt_tokens": {
+        "min": 290,
+        "median": 355.5,
+        "p95": 402.0,
+        "max": 459
+      },
+      "target_tokens": {
+        "min": 12,
+        "max": 24
+      },
+      "n_truncated": 0,
+      "gold_evidence_ids_lost_to_truncation": 0
+    },
+    "test": {
+      "prompt_tokens": {
+        "min": 263,
+        "median": 315.5,
+        "p95": 386.75,
+        "max": 525
+      },
+      "target_tokens": {
+        "min": 13,
+        "max": 27
+      },
+      "n_truncated": 0,
+      "gold_evidence_ids_lost_to_truncation": 0
+    }
+  }
+}
