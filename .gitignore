@@ -11,3 +11,6 @@ reports/*
 *.safetensors
 *.bin
 .gradio/
+
+# trained LoRA adapters shipped with the repo
+!adapters/**/*.safetensors

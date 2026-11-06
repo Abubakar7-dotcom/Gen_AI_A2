@@ -29,8 +29,8 @@ from src.pipeline import (DISCLAIMER, InputError, criteria_to_text, load_screene
 from src.schema import number_sentences
 
 DEFAULTS = {
-    "model": "Qwen/Qwen2.5-1.5B-Instruct", "adapter": "outputs/ft_1p5b_r16/best",
-    "draft": "Qwen/Qwen2.5-0.5B-Instruct", "draft_adapter": "outputs/ft_0p5b_r16/best",
+    "model": "Qwen/Qwen2.5-1.5B-Instruct", "adapter": "adapters/ft_1p5b_r16",
+    "draft": "Qwen/Qwen2.5-0.5B-Instruct", "draft_adapter": "adapters/ft_0p5b_r16",
 }
 LABEL_COLOR = {"included": "#1a7f37", "not excluded": "#1a7f37", "not included": "#cf222e", "excluded": "#cf222e",
                "not enough information": "#9a6700", "not applicable": "#57606a"}

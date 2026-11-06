@@ -1,0 +1,46 @@
+{
+  "selected_epoch": 2,
+  "epoch": 2,
+  "step": 76,
+  "val_loss": 0.12631929663131708,
+  "val_accuracy": 0.7427184466019418,
+  "val_macro_f1": 0.552198618375089,
+  "val_evidence_micro_f1": 0.5349794238683129,
+  "val_output_validity": {
+    "parse_failures": 0,
+    "invalid_labels": 0,
+    "records_with_unsupported_ids": 0
+  },
+  "elapsed_s": 543.0,
+  "config": {
+    "name": "ft_1p5b_r16",
+    "base_model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "output_dir": "outputs/ft_1p5b_r16",
+    "seed": 42,
+    "lora": {
+      "r": 16,
+      "alpha": 32,
+      "dropout": 0.05,
+      "target_modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj"
+      ]
+    },
+    "lr": 0.0002,
+    "weight_decay": 0.0,
+    "warmup_ratio": 0.05,
+    "epochs": 3,
+    "batch_size": 4,
+    "grad_accum": 4,
+    "max_grad_norm": 1.0,
+    "max_len": 1024,
+    "gradient_checkpointing": true,
+    "eval_batch_size": 16,
+    "eval_max_new_tokens": 64
+  }
+}

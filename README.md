@@ -41,10 +41,10 @@ All versions are pinned in `requirements.txt` (torch 2.15, transformers 5.22.1, 
 The base models (`Qwen/Qwen2.5-1.5B-Instruct`, `Qwen/Qwen2.5-0.5B-Instruct`, ~4 GB together) are
 downloaded from Hugging Face automatically on first use.
 
-**Fine-tuned weights (LoRA adapters).** The app and the evaluation expect them in
-`outputs/ft_1p5b_r16/best` (target) and `outputs/ft_0p5b_r16/best` (speculative draft). They are
-produced by the training run below. **Download link: TODO (added when the adapters are published).**
-Any adapter folder or Hugging Face repo id can be passed with `--adapter`.
+**Fine-tuned weights (LoRA adapters)** are included in the repository: `adapters/ft_1p5b_r16`
+(screening model, 74 MB) and `adapters/ft_0p5b_r16` (speculative draft, 35 MB); see
+`adapters/README.md`. Cloning the repository is enough; retraining (Section 4) writes new adapters
+to `outputs/<run>/best`. Any adapter folder or Hugging Face repo id can be passed with `--adapter`.
 
 ## 2. Start the app
 ```bash

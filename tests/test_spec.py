@@ -20,7 +20,8 @@ from src.modeling import load_model, load_tokenizer, pick_device
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "Qwen/Qwen2.5-0.5B-Instruct"
-ADAPTER = ROOT / "outputs" / "ft_0p5b_r16" / "best"
+ADAPTER = next((p for p in (ROOT / "adapters" / "ft_0p5b_r16", ROOT / "outputs" / "ft_0p5b_r16" / "best") if p.exists()),
+               ROOT / "adapters" / "ft_0p5b_r16")
 
 
 @pytest.fixture(scope="module")
