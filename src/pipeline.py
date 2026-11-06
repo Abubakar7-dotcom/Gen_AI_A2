@@ -239,8 +239,13 @@ def load_screener(model_id: str, adapter: str | None, draft_id: str | None = Non
     if draft_id:
         draft, dtok = load_model(draft_id, draft_adapter, device=dev)
         assert_same_tokenizer(tok, dtok)
-    return Screener(model, tok, model_id, adapter, dev, draft,
-                    f"{draft_id} + {draft_adapter}" if draft_adapter else draft_id)
+    def label(a):  # repo-relative path (no user home directory in exported reports) or HF repo id
+        try:
+            return str(Path(a).resolve().relative_to(ROOT)) if a and Path(a).exists() else a
+        except ValueError:
+            return a
+    return Screener(model, tok, model_id, label(adapter), dev, draft,
+                    f"{draft_id} + {label(draft_adapter)}" if draft_adapter else draft_id)
 
 
 # ------------------------------------------------------------------ export
