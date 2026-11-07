@@ -27,7 +27,7 @@
 \maketitle
 
 \begin{abstract}
-Matching patients to clinical trials requires checking a patient record against every inclusion and exclusion criterion and justifying each decision. We fine-tune Qwen2.5-1.5B-Instruct with LoRA on the TrialGPT-Criterion-Annotations dataset to output, for one patient note and one criterion, an eligibility label and the IDs of the supporting note sentences. On a fixed patient-level split (37/8/8 patients, seed 42), fine-tuning raises validation accuracy from 0.068 to 0.743 and macro-F1 from 0.082 to 0.552, removes all malformed outputs, and lifts evidence micro-F1 from 0.091 to 0.535; on the held-out test set the selected model reaches \TODO{test accuracy / macro-F1 / evidence F1}. Around the model we implement, from raw forward passes, a KV-cache decoder that is token-identical to uncached decoding and 1.3--5.9$\times$ faster on a T4 GPU (up to 24.5$\times$ in fp32), a tiled online-softmax attention whose largest intermediate is 1024$\times$ smaller than the full score matrix at $N=4096$, and greedy speculative decoding with a 0.5B draft that reproduces the target's output exactly. A local browser application screens a note against a criteria list, shows verbatim evidence, aggregates a rule-based preliminary outcome and exports a report with provenance.
+Matching patients to clinical trials requires checking a patient record against every inclusion and exclusion criterion and justifying each decision. We fine-tune Qwen2.5-1.5B-Instruct with LoRA on the TrialGPT-Criterion-Annotations dataset to output, for one patient note and one criterion, an eligibility label and the IDs of the supporting note sentences. On a fixed patient-level split (37/8/8 patients, seed 42), fine-tuning raises validation accuracy from 0.068 to 0.743 and macro-F1 from 0.082 to 0.552, removes all malformed outputs, and lifts evidence micro-F1 from 0.091 to 0.535; on the held-out test set the selected model reaches accuracy 0.704, macro-F1 0.369 and evidence micro-F1 0.594 (base model: 0.087, 0.130 and 0.111). Around the model we implement, from raw forward passes, a KV-cache decoder that is token-identical to uncached decoding and 1.3--5.9$\times$ faster on a T4 GPU (up to 24.5$\times$ in fp32), a tiled online-softmax attention whose largest intermediate is 1024$\times$ smaller than the full score matrix at $N=4096$, and greedy speculative decoding with a 0.5B draft that reproduces the target's output exactly and, with a fine-tuned draft, is up to 1.27$\times$ faster on an Apple M5 GPU. A local browser application screens a note against a criteria list, shows verbatim evidence, aggregates a rule-based preliminary outcome and exports a report with provenance.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -175,7 +175,7 @@ The Gradio application runs locally (\texttt{start.command} or \texttt{./run.sh}
 
 % =====================================================================
 \section{Experimental Setup and Metrics}
-Training and GPU benchmarks ran on a Google Colab Tesla T4 (16\,GB, compute capability 7.5, CUDA 13.0, PyTorch 2.11, Transformers 5.22.1, PEFT 0.21.2); the application and Mac benchmarks on an Apple M5 laptop (16\,GB, MPS, PyTorch 2.15). All evaluations use greedy decoding (\texttt{do\_sample=False}, repetition penalty 1.0, at most 64 new tokens); Qwen's default sampling configuration is replaced, not merged. Base and fine-tuned models are evaluated on identical rows with identical prompts. The test set was evaluated once, after all choices were frozen on validation.
+Training and GPU benchmarks ran on a Google Colab Tesla T4 (16\,GB, compute capability 7.5, CUDA 13.0, PyTorch 2.11, Transformers 5.22.1, PEFT 0.21.2); the application, the test-set evaluation, the speculative-decoding benchmark and the other Mac benchmarks on an Apple M5 laptop (16\,GB, MPS, fp16, PyTorch 2.15). All evaluations use greedy decoding (\texttt{do\_sample=False}, repetition penalty 1.0, at most 64 new tokens); Qwen's default sampling configuration is replaced, not merged. Base and fine-tuned models are evaluated on identical rows with identical prompts. The test set was evaluated only after all choices were frozen on validation, and no choice was revisited afterwards. A first test run on the T4 gave the same fine-tuned macro-F1 (0.369), but its output files were lost when the Colab session was reset; the reported test numbers are a re-run of the same frozen adapter on the Mac.
 
 \textbf{Classification.} Accuracy, per-class precision/recall/F1, macro-F1 and confusion matrices, overall (six labels) and separately for inclusion and exclusion criteria. Macro-F1 averages over labels present in gold or predictions; an invalid or unparseable output counts as wrong.
 
@@ -217,22 +217,26 @@ LoRA 0.5B r16 & 0.743 & 0.433 & 0.391 & 0.356 & 0.387 & 0.665 & 0 \\
 \end{figure}
 
 \subsection{Test results}
-Table~\ref{tab:test} reports the single test evaluation of the frozen choice against the base model on the same 206 rows; Fig.~\ref{fig:cm} shows the confusion matrix. \TODO{insert numbers from results/metrics/*\_test.json and interpret: per-class F1, inclusion vs exclusion, evidence on non-empty gold.}
+Table~\ref{tab:test} reports the single test evaluation of the frozen choice against the base model on the same 206 rows; Fig.~\ref{fig:cm} shows the confusion matrix. Fine-tuning raises accuracy from 0.087 to 0.704 and macro-F1 from 0.130 to 0.369, and removes the base model's systematic polarity error: the base model labels every one of the 131 exclusion rows ``excluded'', the fine-tuned model only one. Evidence micro-F1 rises from 0.111 to 0.594 (0.708 on rows with non-empty gold evidence, precision 0.85 vs.\ recall 0.61), so the remaining evidence errors are mostly omissions; no output cites a sentence outside the note. Per class, the fine-tuned model reaches F1 0.808 for ``included'', 0.814 for ``not excluded'' and 0.591 for ``not enough information'', but 0.0 for the rare ``not included'' (7 rows) and ``not applicable'' (15 rows), which it effectively never predicts.
+
+Test macro-F1 is lower than validation (0.369 vs.\ 0.552) although accuracy is close (0.704 vs.\ 0.743). The gap is mostly class composition. On validation the two ``excluded'' rows were both correct (F1 1.0), lifting the macro average; the test set has no ``excluded'' rows, and the model's single false ``excluded'' prediction adds that class with F1 0 to the six-label average (macro-F1 over the five labels with test support is 0.443). The test set also has more of the classes the model does not learn (7 ``not included'' and 15 ``not applicable'' vs.\ 3 and 12). Exclusion macro-F1 falls to 0.204 for the same reasons. With 206 rows from 8 patients, these per-class numbers are noisy.
 
 \begin{table}[t]
 \centering
-\caption{Test results (206 rows, evaluated once).}
+\caption{Test results (206 rows, 8 unseen patients).}
 \label{tab:test}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lcc}
 \toprule
 Metric & Base 1.5B & LoRA 1.5B r16 \\
 \midrule
-Accuracy & \TODO{} & \TODO{} \\
-Macro-F1 (overall) & \TODO{} & \TODO{} \\
-Macro-F1 inclusion / exclusion & \TODO{} & \TODO{} \\
-Evidence micro P / R / F1 & \TODO{} & \TODO{} \\
-Evidence micro-F1, non-empty gold & \TODO{} & \TODO{} \\
-Parse failures / invalid labels & \TODO{} & \TODO{} \\
+Accuracy & 0.087 & \textbf{0.704} \\
+Macro-F1 (overall) & 0.130 & \textbf{0.369} \\
+Macro-F1 incl.\ / excl. & 0.199 / 0.000 & 0.397 / 0.204 \\
+Evidence micro P / R / F1 & 0.064 / 0.404 / 0.111 & 0.582 / 0.606 / 0.594 \\
+Evidence micro-F1, non-empty gold & 0.323 & 0.708 \\
+Parse failures / invalid labels & 0 / 0 & 0 / 0 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -245,7 +249,9 @@ Parse failures / invalid labels & \TODO{} & \TODO{} \\
 \end{figure}
 
 \subsection{Error analysis}
-On validation the fine-tuned model makes 53 label errors. The largest group (26) is exclusion criteria the experts marked ``not enough information'' that the model labels ``not excluded'' (e.g.\ ``Unstable angina'' for a patient with new chest pain: the note neither confirms nor rules it out). The model has learned the majority prior that a patient who is not described as having a condition is not excluded, whereas annotators distinguish ``not mentioned'' from ``ruled out''. A second group (10) is ``not applicable'' exclusion criteria predicted ``not excluded''; recall for ``not applicable'' is only 0.08. On inclusion criteria the model errs towards caution (9 ``included'' $\rightarrow$ ``not enough information''). Correct labels with differing evidence occur in 45 rows, often because the model cites a superset of the gold sentences. \TODO{replace/extend with $\geq$8 analysed test errors from results/error\_analysis.md, covering: wrong label/right evidence, right label/wrong evidence, missing-information confusion, not applicable, exclusion polarity, unsupported citation (none observed), contradictory case, truncation (none: longest prompt 621 tokens).}
+On validation the fine-tuned model makes 53 label errors. The largest group (26) is exclusion criteria the experts marked ``not enough information'' that the model labels ``not excluded'' (e.g.\ ``Unstable angina'' for a patient with new chest pain: the note neither confirms nor rules it out). The model has learned the majority prior that a patient who is not described as having a condition is not excluded, whereas annotators distinguish ``not mentioned'' from ``ruled out''. A second group (10) is ``not applicable'' exclusion criteria predicted ``not excluded''; recall for ``not applicable'' is only 0.08. On inclusion criteria the model errs towards caution (9 ``included'' $\rightarrow$ ``not enough information''). Correct labels with differing evidence occur in 45 rows, often because the model cites a superset of the gold sentences.
+
+On test the model makes 61 label errors; \texttt{results/error\_analysis.md} analyses 11 of them in detail. \emph{Missing-information confusion} dominates again: 28 exclusion criteria marked ``not enough information'' are predicted ``not excluded'' (e.g.\ an eGFR threshold for a patient whose note gives no renal function), which turns ``unknown'' into a pass. In the opposite direction on inclusion criteria, the model hedges: ``patients undergoing elective carotid endarterectomy'' for a patient who had cardiac catheterisation is gold ``not included'' but predicted ``not enough information''; ``not included'' is never predicted correctly. \emph{Wrong label with the right evidence} occurs when the model cites the right sentence but misses a clinical inference: ``tachycardic'' is not mapped to ``heart rate of at least 90/min'' (gold included, predicted not enough information), while for a snoring child it accepts a sleep-disordered-breathing definition whose frequency and duration requirements the note does not state. \emph{Not applicable}: all 15 such rows are missed, e.g.\ ``pregnancy'' for a 67-year-old woman or a 5-year-old boy is predicted ``not excluded''; the training labels for such criteria are themselves mixed (of 23 pregnancy/breast-feeding exclusion criteria, 12 are ``not applicable'', 6 ``not enough information'', 5 ``not excluded''). \emph{Polarity flips} are rare but the most harmful: the only ``excluded'' prediction cites lower-limb ischaemia (``cool right foot'') for ``significant \emph{upper} limb peripheral arterial disease''. \emph{Right label, wrong evidence}: the model sometimes cites a generic consent sentence instead of the age sentence for ``Age $>$ 18'', and often cites nothing for ``not excluded'' even when the decision rests on a stated age or sex, mirroring the training data, where 75\% of ``not excluded'' rows have empty evidence. \emph{Contradictory gold}: for ``no medical history of central venous catheterization'' both model and experts cite the arterial catheterisation sentence; the experts conclude ``included'', the model ``not enough information'', and both readings are defensible. No test output cites an out-of-range sentence (unsupported citations: 0), and no input is truncated (longest test prompt 525 tokens).
 
 \subsection{KV-cache decoding}
 Table~\ref{tab:kv} and Fig.~\ref{fig:kv} compare the decoders on the T4 for the 1.5B model. All 15 configurations (9 in fp16, 6 in fp32) are token-identical, as are all 9 on the Mac (0.5B, fp16). The cached decoder's throughput is flat at 22--25 tokens/s regardless of prompt length, while the uncached decoder slows from 19.5 to 3.8 tokens/s as the sequence grows, giving speedups of 1.3$\times$ (128 in / 32 out) to 5.9$\times$ (1024 / 256) in fp16 and up to 24.5$\times$ in fp32, where the uncached recomputation is compute-bound. The cache itself is small thanks to GQA (35\,MiB at 1{,}280 tokens in fp16, exactly 28\,KB/token). In fp16 at short prompts the speedup is modest because each decode step is dominated by Python and kernel-launch overhead of 28 layers ($\approx$43\,ms/token, well above the $\approx$10\,ms needed to stream 3\,GB of weights), so recomputing 128 extra tokens costs little.
@@ -286,12 +292,41 @@ Against a float64 ground truth, the worst maximum absolute error over 12 shape/m
 \end{figure}
 
 \subsection{Speculative decoding}
-\TODO{Table and Fig.~\ref{fig:spec} from results/bench/spec\_gpu.*: acceptance rate, tokens per target pass, latency, tok/s, peak memory and speedup for base vs fine-tuned 0.5B draft and $k\in\{2,4,6\}$, task and long workloads; all outputs token-identical.} Tests confirm exactness with three drafts: the target itself (every draft accepted), the fine-tuned 0.5B (partial acceptance) and a randomly initialised two-layer model (almost every draft rejected), for $k\in\{1,3,5\}$ and on task prompts with EOS. On the Mac the speculative path was slower than the plain cached decoder in a smoke test, because each round costs $k$ sequential draft passes plus one target pass and per-pass overhead, not FLOPs, dominates at batch size 1; the answers are also short (12--37 tokens), limiting the number of rounds over which speculation can pay off.
+Table~\ref{tab:spec} and Fig.~\ref{fig:spec} report the benchmark with the fine-tuned 1.5B target on the Mac (MPS, fp16): the \emph{task} workload is 24 validation prompts with EOS (346 output tokens in total), the \emph{long} workload a 512-token prompt with 128 forced output tokens. All 12 configurations are token-identical to the target-only KV decoder. Fine-tuning the draft raises its acceptance rate on task prompts from 0.65--0.72 to 0.88--0.93, so each target pass yields 3.83 (k=4) or 5.28 (k=6) tokens instead of 3.29 and 3.58, and the fine-tuned draft is the only one that gives a clear speedup (1.24--1.27$\times$ at $k=4$--6). With the base draft the method roughly breaks even (0.92--1.01$\times$). On the long synthetic prompt, where the fine-tuned draft has no advantage (near-identical acceptance, 0.46--0.69), speedups are at most 1.08$\times$, and $k=6$ is slower (0.87$\times$) because acceptance falls as the draft runs further ahead. The gains are small because a 0.5B pass is not much cheaper than a 1.5B pass at batch size 1: both are dominated by per-layer launch overhead, so the draft takes 43--67\% of the total time. The answers are also short (12--37 tokens), leaving few rounds to amortise the extra prefill. Each configuration was timed once after one warm-up, so differences of a few percent (e.g.\ the 0.91$\times$ for the fine-tuned draft at $k=2$) are within run-to-run noise. Peak memory rises by only 4--7\,MB over the target alone (4.9\,GB, MPS sampled). Tests confirm exactness with three drafts: the target itself (every draft accepted), the fine-tuned 0.5B (partial acceptance) and a randomly initialised two-layer model (almost every draft rejected), for $k\in\{1,3,5\}$ and on task prompts with EOS.
+
+\begin{table}[t]
+\centering
+\caption{Greedy speculative decoding, fine-tuned Qwen2.5-1.5B target, Apple M5 (MPS, fp16). Acc.: acceptance rate; tok/pass: tokens per target verification pass. All outputs token-identical to the target-only KV decoder.}
+\label{tab:spec}
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{llrrrrrr}
+\toprule
+Workload & Draft & $k$ & Acc. & tok/pass & Time (s) & tok/s & Speedup \\
+\midrule
+task & -- & -- & -- & -- & 24.71 & 14.0 & 1.00$\times$ \\
+task & base 0.5B & 2 & 0.670 & 2.19 & 25.43 & 13.6 & 0.97$\times$ \\
+task & base 0.5B & 4 & 0.722 & 3.29 & 24.43 & 14.2 & 1.01$\times$ \\
+task & base 0.5B & 6 & 0.652 & 3.58 & 26.81 & 12.9 & 0.92$\times$ \\
+task & FT 0.5B & 2 & 0.933 & 2.56 & 27.19 & 12.7 & 0.91$\times$ \\
+task & FT 0.5B & 4 & 0.881 & 3.83 & 19.93 & 17.4 & 1.24$\times$ \\
+task & FT 0.5B & 6 & 0.885 & 5.28 & 19.44 & 17.8 & \textbf{1.27}$\times$ \\
+\midrule
+long & -- & -- & -- & -- & 5.92 & 21.6 & 1.00$\times$ \\
+long & base 0.5B & 2 & 0.689 & 2.40 & 5.52 & 23.2 & 1.07$\times$ \\
+long & base 0.5B & 4 & 0.575 & 3.26 & 5.49 & 23.3 & 1.08$\times$ \\
+long & base 0.5B & 6 & 0.456 & 3.74 & 6.77 & 18.9 & 0.87$\times$ \\
+long & FT 0.5B & 2 & 0.667 & 2.35 & 5.64 & 22.7 & 1.05$\times$ \\
+long & FT 0.5B & 4 & 0.575 & 3.26 & 5.52 & 23.2 & 1.07$\times$ \\
+long & FT 0.5B & 6 & 0.456 & 3.74 & 6.82 & 18.8 & 0.87$\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{figure}[t]
 \centering
-\safegraphic{\columnwidth}{figures/spec_gpu.png}
-\caption{Speculative decoding on T4: speedup and acceptance rate vs.\ draft length $k$.}
+\safegraphic{\columnwidth}{figures/spec_mps.png}
+\caption{Speculative decoding on the Apple M5 (fp16): speedup over the target-only KV decoder and acceptance rate vs.\ draft length $k$.}
 \label{fig:spec}
 \end{figure}
 
@@ -306,10 +341,10 @@ Against a float64 ground truth, the worst maximum absolute error over 12 shape/m
 
 % =====================================================================
 \section{Limitations}
-The dataset is small (602 training rows, 37 patients) and skewed; with two ``excluded'' validation rows and none in test, F1 for that class is not meaningful, and class-level conclusions rest on few examples. The model under-uses ``not enough information'' for exclusion criteria, which is the more dangerous direction for screening because missing information becomes an apparent pass; the rule-based outcome mitigates this only partly. Evidence agreement is moderate (micro-F1 0.535), and template explanations, while grounded, do not explain clinical reasoning. Patient-level splitting does not prevent trial overlap (one trial in train and validation). The notes are short case descriptions from the TREC Clinical Decision Support topics, not full clinical records, so performance on clinical text is unknown. All runs use a single seed. The prototype is not validated for clinical use.
+The dataset is small (602 training rows, 37 patients) and skewed; with two ``excluded'' validation rows and none in test, F1 for that class is not meaningful, rare labels (``not included'', ``not applicable'') are not learned, and macro-F1 differs strongly between validation and test (0.552 vs.\ 0.369), and class-level conclusions rest on few examples. The model under-uses ``not enough information'' for exclusion criteria, which is the more dangerous direction for screening because missing information becomes an apparent pass; the rule-based outcome mitigates this only partly. Evidence agreement is moderate (micro-F1 0.535 on validation, 0.594 on test) and mostly limited by omitted citations, and template explanations, while grounded, do not explain clinical reasoning. Patient-level splitting does not prevent trial overlap (one trial in train and validation). The notes are short case descriptions from the TREC Clinical Decision Support topics, not full clinical records, so performance on clinical text is unknown. All runs use a single seed. The prototype is not validated for clinical use.
 
 \section{Conclusion}
-A 1.5B open model fine-tuned with LoRA on 602 expert annotations learns criterion-level eligibility with cited evidence well enough to correct the base model's systematic polarity errors and to produce only valid outputs. Implementing the inference stack by hand made its costs explicit: KV caching gives exact outputs with linear memory and flat per-token cost; online-softmax tiling removes the quadratic memory but needs kernel fusion for speed; greedy speculative decoding is exact by construction, and its benefit depends on the draft/target cost ratio and per-pass overhead. Future work: class-balanced training or calibration for ``not enough information'', more seeds, and evaluation on real clinical notes.
+A 1.5B open model fine-tuned with LoRA on 602 expert annotations learns criterion-level eligibility with cited evidence well enough to correct the base model's systematic polarity errors and to produce only valid outputs. Implementing the inference stack by hand made its costs explicit: KV caching gives exact outputs with linear memory and flat per-token cost; online-softmax tiling removes the quadratic memory but needs kernel fusion for speed; greedy speculative decoding is exact by construction, and its benefit depends on draft quality (a task-fine-tuned draft was needed for a 1.27$\times$ speedup), the draft/target cost ratio and per-pass overhead. Future work: class-balanced training or calibration for ``not enough information'', more seeds, and evaluation on real clinical notes.
 
 \appendix[AI-use statement]
 An AI coding assistant (Claude, Anthropic) was used to help write code, tests, documentation and drafts of this report. The author designed the study, ran all experiments, checked every reported number against the logged results in the repository, and takes responsibility for the content. \TODO{adjust to your course's required wording.}

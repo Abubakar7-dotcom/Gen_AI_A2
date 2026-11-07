@@ -93,7 +93,7 @@ python -m src.evaluate --name ft_1p5b_r16 --adapter outputs/ft_1p5b_r16/best --s
 python -m src.evaluate --name ft_1p5b_r16 --adapter outputs/ft_1p5b_r16/best --split test --confirm-test
 python -m bench.bench_kv --tag gpu_1p5b_half
 python -m bench.bench_attention --device cuda --tag gpu
-python -m bench.bench_spec --tag gpu
+python -m bench.bench_spec --tag gpu        # reported run: --tag mps on the Mac
 python scripts/error_analysis.py --run ft_1p5b_r16 --split test
 ```
 Training: LoRA r=16, α=32 on all attention and MLP projections, lr 2e-4, 3 epochs, effective batch
@@ -111,6 +111,24 @@ The checkpoint with the best **validation macro-F1** is kept. Evaluation decodin
 | LoRA 0.5B r=16 | 0.743 | 0.433 | 0.387 | 0 |
 
 Full tables: `results/val_summary.md`, per-run JSON in `results/metrics/`.
+
+### Test results (evaluated after all choices were frozen on validation)
+| run | accuracy | macro-F1 | evidence micro-F1 | evidence micro-F1 (non-empty gold) | parse failures |
+|---|---|---|---|---|---|
+| base Qwen2.5-1.5B | 0.087 | 0.130 | 0.111 | 0.323 | 0 |
+| **LoRA 1.5B r=16** | **0.704** | **0.369** | **0.594** | **0.708** | 0 |
+
+The test set has no "excluded" rows; the model's single false "excluded" prediction adds that class
+with F1 = 0 to the six-label macro average (0.443 over the five labels present in test). Error
+analysis of 11 test errors: `results/error_analysis.md`. The test evaluation and the speculative
+benchmark below ran on the Mac (MPS, fp16): Colab's free GPU quota was used up, and the files from
+an earlier T4 test run (same macro-F1, 0.369) were lost when the Colab session reset.
+
+### Speculative decoding (fine-tuned 1.5B target, Apple M5, fp16)
+All 12 configurations produce output token-identical to the target-only KV decoder. On task prompts
+the fine-tuned 0.5B draft has acceptance 0.88–0.93 (base draft 0.65–0.72) and gives a 1.24–1.27×
+speedup at k = 4–6; the base draft breaks even (0.92–1.01×). Full table:
+`results/bench/spec_mps.csv`.
 
 ## 5. Tests
 ```bash
