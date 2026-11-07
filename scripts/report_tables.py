@@ -37,9 +37,9 @@ def test_table():
 
 
 def spec_table():
-    p = R / "bench/spec_gpu.json"
-    if not p.exists():
-        print("% spec_gpu.json not available yet"); return
+    p = next((q for q in (R / "bench/spec_gpu.json", R / "bench/spec_mps.json") if q.exists()), None)
+    if p is None:
+        print("% spec_gpu.json / spec_mps.json not available yet"); return
     d = json.loads(p.read_text())
     print("% --- Table: speculative decoding (workload, draft, k, accept, tok/round, s, tok/s, speedup, equal)")
     for r in d["rows"]:
@@ -56,6 +56,7 @@ def copy_figures():
         R / "bench/kv_gpu_1p5b_half.png": "kv_gpu_1p5b_half.png",
         R / "bench/attention_gpu.png": "attention_gpu.png",
         R / "bench/spec_gpu.png": "spec_gpu.png",
+        R / "bench/spec_mps.png": "spec_mps.png",
     }
     for src, dst in pairs.items():
         if src.exists():

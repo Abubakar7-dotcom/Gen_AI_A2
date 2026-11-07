@@ -1,0 +1,20 @@
+W1107 22:09:46.549000 69691 .venv/lib/python3.11/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:00<03:01,  1.85it/s]Loading weights:  58%|█████▊    | 195/338 [00:00<00:00, 401.87it/s]Loading weights:  90%|████████▉ | 303/338 [00:01<00:00, 152.82it/s]Loading weights: 100%|██████████| 338/338 [00:02<00:00, 163.46it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   0%|          | 1/290 [00:01<06:20,  1.32s/it]Loading weights: 100%|██████████| 290/290 [00:01<00:00, 218.34it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 5638.42it/s]
+{"target": "Qwen/Qwen2.5-1.5B-Instruct", "target_adapter": "adapters/ft_1p5b_r16", "draft_base": "Qwen/Qwen2.5-0.5B-Instruct", "draft_adapter": "adapters/ft_0p5b_r16", "dtype": "torch.float16", "device": "mps", "torch": "2.15.0", "platform": "macOS-27.0.1-arm64-arm-64bit", "gpu": null, "n_records": 24, "long": [512, 128], "warmup": 1, "repeats": 1}
+[task] target-only KV: 346 tokens in 24.71s (14.0 tok/s)
+[task] base_0p5b k=2:   25.43s  speedup 0.97x  accept 0.67  tok/round 2.19  target fwd 171  equal=True
+[task] base_0p5b k=4:   24.43s  speedup 1.01x  accept 0.72  tok/round 3.29  target fwd 122  equal=True
+[task] base_0p5b k=6:   26.81s  speedup 0.92x  accept 0.65  tok/round 3.58  target fwd 114  equal=True
+[task] ft_0p5b   k=2:   27.19s  speedup 0.91x  accept 0.93  tok/round 2.56  target fwd 150  equal=True
+[task] ft_0p5b   k=4:   19.93s  speedup 1.24x  accept 0.88  tok/round 3.83  target fwd 108  equal=True
+[task] ft_0p5b   k=6:   19.44s  speedup 1.27x  accept 0.89  tok/round 5.28  target fwd 85  equal=True
+[long] target-only KV: 128 tokens in 5.92s (21.6 tok/s)
+[long] base_0p5b k=2:    5.52s  speedup 1.07x  accept 0.69  tok/round 2.40  target fwd 55  equal=True
+[long] base_0p5b k=4:    5.49s  speedup 1.08x  accept 0.58  tok/round 3.26  target fwd 40  equal=True
+[long] base_0p5b k=6:    6.77s  speedup 0.87x  accept 0.46  tok/round 3.74  target fwd 35  equal=True
+[long] ft_0p5b   k=2:    5.64s  speedup 1.05x  accept 0.67  tok/round 2.35  target fwd 56  equal=True
+[long] ft_0p5b   k=4:    5.52s  speedup 1.07x  accept 0.58  tok/round 3.26  target fwd 40  equal=True
+[long] ft_0p5b   k=6:    6.82s  speedup 0.87x  accept 0.46  tok/round 3.74  target fwd 35  equal=True
+all outputs token-identical: True -> /Users/abubakar/Documents/uniStuff/GenAi_Assignment2/trialmatch/results/bench/spec_mps.*
