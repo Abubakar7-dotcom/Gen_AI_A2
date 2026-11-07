@@ -132,6 +132,10 @@ AGGREGATION_RULE = ("Likely ineligible if any inclusion criterion is 'not includ
                     "unresolved; otherwise Potentially eligible. 'Not applicable' criteria are ignored.")
 
 
+def _crit_list(idx: list[int]) -> str:
+    return ("Criterion " if len(idx) == 1 else "Criteria ") + ", ".join(map(str, idx))
+
+
 def aggregate(rows: list[dict]) -> dict:
     """Rule-based preliminary outcome (not a clinical decision):
         any inclusion 'not included' or exclusion 'excluded'          -> Likely ineligible
@@ -141,11 +145,11 @@ def aggregate(rows: list[dict]) -> dict:
     failing = [r["index"] for r in rows if r["label"] in ("not included", "excluded")]
     missing = [r["index"] for r in rows if r["label"] == "not enough information" or r["status"] != "ok"]
     if failing:
-        outcome, why = "Likely ineligible", f"criteria {', '.join(map(str, failing))} indicate ineligibility"
+        outcome, why = "Likely ineligible", f"{_crit_list(failing)} {'indicates' if len(failing) == 1 else 'indicate'} ineligibility"
     elif missing:
-        outcome, why = "Needs more information", f"criteria {', '.join(map(str, missing))} cannot be decided from the note"
+        outcome, why = "Needs more information", f"{_crit_list(missing)} cannot be decided from the note"
     else:
-        outcome, why = "Potentially eligible", "no criterion indicates ineligibility and none is missing information"
+        outcome, why = "Potentially eligible", "No criterion indicates ineligibility and none is missing information"
     return {"outcome": outcome, "reason": why, "failing": failing, "missing": missing,
             "rule": AGGREGATION_RULE}
 
@@ -260,7 +264,7 @@ def report_html(rep: dict) -> str:
         lab = r["label"] or ("unparseable" if r["status"] == "unparseable" else f"invalid: {r['raw_label']}")
         ev = "<br>".join(f"<b>[{i}]</b> {e(t)}" for i, t in zip(r["evidence_ids"], r["evidence_text"])) or "<i>none cited</i>"
         rows.append(f"<tr><td>{r['index']}</td><td>{e(r['criterion_type'])}</td><td>{e(r['criterion'])}</td>"
-                    f"<td><span style='background:{_BADGE.get(r['label'], '#8250df')};color:#fff;padding:2px 6px;border-radius:4px'>{e(lab)}</span></td>"
+                    f"<td><span style='background:{_BADGE.get(r['label'], '#8250df')};color:#fff;padding:2px 6px;border-radius:4px;white-space:nowrap'>{e(lab)}</span></td>"
                     f"<td>{ev}</td><td>{e(r['explanation'])}</td></tr>")
     note = "".join(f"<li value='{i}'>{e(s)}</li>" for i, s in enumerate(rep["sentences"]))
     warn = "".join(f"<li>{e(w)}</li>" for w in rep["warnings"]) or "<li>none</li>"
