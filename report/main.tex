@@ -209,12 +209,12 @@ LoRA 0.5B r16 & 0.743 & 0.433 & 0.391 & 0.356 & 0.387 & 0.665 & 0 \\
 
 \textbf{Competing choices.} Rank 16 beats rank 8 by 0.08 macro-F1 at equal accuracy; the difference comes from the exclusion criteria (0.504 vs.\ 0.377). The 0.5B model matches the 1.5B in accuracy, which is dominated by the majority class, but trails by 0.12 macro-F1 and 0.15 evidence micro-F1, so the 1.5B r16 adapter was selected. Fig.~\ref{fig:curves} shows the training curves: validation loss is lowest after epoch 2 (0.126) and rises slightly in epoch 3, and validation macro-F1 peaks at epoch 2 (0.552 vs.\ 0.345 after epoch 1 and 0.540 after epoch 3), so the epoch-2 checkpoint is kept. Training took 14 minutes per 1.5B run on the T4 (4.3\,GB peak memory).
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\safegraphic{\columnwidth}{figures/curves_ft_1p5b_r16.png}
+\safegraphic{0.78\textwidth}{figures/curves_ft_1p5b_r16.png}
 \caption{LoRA 1.5B r16 on T4. Left: training loss per optimiser step and validation loss per epoch (answer tokens only). Right: validation macro-F1, accuracy and evidence micro-F1 from greedy generation after each epoch; epoch 2 is selected.}
 \label{fig:curves}
-\end{figure}
+\end{figure*}
 
 \subsection{Test results}
 Table~\ref{tab:test} reports the single test evaluation of the frozen choice against the base model on the same 206 rows; Fig.~\ref{fig:cm} shows the confusion matrix. Fine-tuning raises accuracy from 0.087 to 0.704 and macro-F1 from 0.130 to 0.369, and removes the base model's systematic polarity error: the base model labels every one of the 131 exclusion rows ``excluded'', the fine-tuned model only one. Evidence micro-F1 rises from 0.111 to 0.594 (0.708 on rows with non-empty gold evidence, precision 0.85 vs.\ recall 0.61), so the remaining evidence errors are mostly omissions; no output cites a sentence outside the note. Per class, the fine-tuned model reaches F1 0.808 for ``included'', 0.814 for ``not excluded'' and 0.591 for ``not enough information'', but 0.0 for the rare ``not included'' (7 rows) and ``not applicable'' (15 rows), which it effectively never predicts.
@@ -274,22 +274,22 @@ In & Out & dtype & No cache (s) & KV (s) & Speedup & KV tok/s \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\safegraphic{\columnwidth}{figures/kv_gpu_1p5b_half.png}
+\safegraphic{\textwidth}{figures/kv_gpu_1p5b_half.png}
 \caption{KV cache vs.\ no cache on T4 (fp16): latency, decode throughput, peak memory.}
 \label{fig:kv}
-\end{figure}
+\end{figure*}
 
 \subsection{Tiled attention}
 Against a float64 ground truth, the worst maximum absolute error over 12 shape/mask configurations per input type (including $N_q=1$ decode, lengths not divisible by the tile, GQA and non-causal) is $9.6\times10^{-7}$ for the tiled kernel in fp32 vs.\ $9.4\times10^{-7}$ for the reference and $9.7\times10^{-7}$ for PyTorch SDPA, and $9.7\times10^{-4}$ for all three with fp16 inputs (fp16 output rounding). With scores of order $10^3$ the naive softmax overflows while the tiled kernel stays finite (tested). Fig.~\ref{fig:att} shows speed and memory on the T4: the reference's extra memory grows quadratically (2.3\,GB at $N=4096$, about three buffers the size of the 768\,MiB fp32 score matrix), the tiled kernel's linearly (63\,MB, dominated by the output and statistics; one 128$\times$128 tile is 0.75\,MB). The Python-level tiled kernel is 2--9$\times$ slower than the reference on the GPU and 50$\times$ slower than fused SDPA: each tile issues several small kernels, nothing is fused and there is no control over on-chip memory, which is exactly what FlashAttention adds. Larger tiles amortise this overhead (627/231/44/13\,ms for tiles of 32/64/128/256 at $N=2048$); causal skipping removes 47\% of tiles at tile 128. On the Mac the tiled kernel overtook the reference at $N\ge2048$ (41.6 vs.\ 60.4\,ms), where the reference becomes memory-bound.
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\safegraphic{\columnwidth}{figures/attention_gpu.png}
+\safegraphic{0.78\textwidth}{figures/attention_gpu.png}
 \caption{Attention on T4 (fp16): time and measured peak extra memory vs.\ $N$.}
 \label{fig:att}
-\end{figure}
+\end{figure*}
 
 \subsection{Speculative decoding}
 Table~\ref{tab:spec} and Fig.~\ref{fig:spec} report the benchmark with the fine-tuned 1.5B target on the Mac (MPS, fp16): the \emph{task} workload is 24 validation prompts with EOS (346 output tokens in total), the \emph{long} workload a 512-token prompt with 128 forced output tokens. All 12 configurations are token-identical to the target-only KV decoder. Fine-tuning the draft raises its acceptance rate on task prompts from 0.65--0.72 to 0.88--0.93, so each target pass yields 3.83 (k=4) or 5.28 (k=6) tokens instead of 3.29 and 3.58, and the fine-tuned draft is the only one that gives a clear speedup (1.24--1.27$\times$ at $k=4$--6). With the base draft the method roughly breaks even (0.92--1.01$\times$). On the long synthetic prompt, where the fine-tuned draft has no advantage (near-identical acceptance, 0.46--0.69), speedups are at most 1.08$\times$, and $k=6$ is slower (0.87$\times$) because acceptance falls as the draft runs further ahead. The gains are small because a 0.5B pass is not much cheaper than a 1.5B pass at batch size 1: both are dominated by per-layer launch overhead, so the draft takes 43--67\% of the total time. The answers are also short (12--37 tokens), leaving few rounds to amortise the extra prefill. Each configuration was timed once after one warm-up, so differences of a few percent (e.g.\ the 0.91$\times$ for the fine-tuned draft at $k=2$) are within run-to-run noise. Peak memory rises by only 4--7\,MB over the target alone (4.9\,GB, MPS sampled). Tests confirm exactness with three drafts: the target itself (every draft accepted), the fine-tuned 0.5B (partial acceptance) and a randomly initialised two-layer model (almost every draft rejected), for $k\in\{1,3,5\}$ and on task prompts with EOS.
@@ -323,25 +323,25 @@ long & FT 0.5B & 6 & 0.456 & 3.74 & 6.82 & 18.8 & 0.87$\times$ \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\safegraphic{\columnwidth}{figures/spec_mps.png}
+\safegraphic{0.78\textwidth}{figures/spec_mps.png}
 \caption{Speculative decoding on the Apple M5 (fp16): speedup over the target-only KV decoder and acceptance rate vs.\ draft length $k$.}
 \label{fig:spec}
-\end{figure}
+\end{figure*}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\safegraphic{\columnwidth}{figures/app_screening.png}\\[2pt]
-\safegraphic{0.49\columnwidth}{figures/app_lab.png}\hfill
-\safegraphic{0.49\columnwidth}{figures/app_report.png}
-\caption{Application: screening results with highlighted evidence (top), Inference Lab (left), exported report (right).}
+\safegraphic{0.355\textwidth}{figures/app_screening.png}\hfill
+\safegraphic{0.315\textwidth}{figures/app_lab.png}\hfill
+\safegraphic{0.315\textwidth}{figures/app_report.png}
+\caption{Application. Left: Screening tab on a held-out test patient (all five criteria agree with the expert labels, shown for comparison), with verbatim evidence, template explanations and the rule-based outcome. Middle: Inference Lab, live generation comparison (all three decoders token-identical) and attention comparison. Right: exported HTML report with provenance.}
 \label{fig:app}
-\end{figure}
+\end{figure*}
 
 % =====================================================================
 \section{Limitations}
-The dataset is small (602 training rows, 37 patients) and skewed; with two ``excluded'' validation rows and none in test, F1 for that class is not meaningful, rare labels (``not included'', ``not applicable'') are not learned, and macro-F1 differs strongly between validation and test (0.552 vs.\ 0.369), and class-level conclusions rest on few examples. The model under-uses ``not enough information'' for exclusion criteria, which is the more dangerous direction for screening because missing information becomes an apparent pass; the rule-based outcome mitigates this only partly. Evidence agreement is moderate (micro-F1 0.535 on validation, 0.594 on test) and mostly limited by omitted citations, and template explanations, while grounded, do not explain clinical reasoning. Patient-level splitting does not prevent trial overlap (one trial in train and validation). The notes are short case descriptions from the TREC Clinical Decision Support topics, not full clinical records, so performance on clinical text is unknown. All runs use a single seed. The prototype is not validated for clinical use.
+The dataset is small (602 training rows, 37 patients) and skewed; with two ``excluded'' validation rows and none in test, F1 for that class is not meaningful, rare labels (``not included'', ``not applicable'') are not learned, and macro-F1 differs strongly between validation and test (0.552 vs.\ 0.369); class-level conclusions therefore rest on few examples. The model under-uses ``not enough information'' for exclusion criteria, which is the more dangerous direction for screening because missing information becomes an apparent pass; the rule-based outcome mitigates this only partly. Evidence agreement is moderate (micro-F1 0.535 on validation, 0.594 on test) and mostly limited by omitted citations, and template explanations, while grounded, do not explain clinical reasoning. Patient-level splitting does not prevent trial overlap (one trial in train and validation). The notes are short case descriptions from the TREC Clinical Decision Support topics, not full clinical records, so performance on clinical text is unknown. All runs use a single seed. The prototype is not validated for clinical use.
 
 \section{Conclusion}
 A 1.5B open model fine-tuned with LoRA on 602 expert annotations learns criterion-level eligibility with cited evidence well enough to correct the base model's systematic polarity errors and to produce only valid outputs. Implementing the inference stack by hand made its costs explicit: KV caching gives exact outputs with linear memory and flat per-token cost; online-softmax tiling removes the quadratic memory but needs kernel fusion for speed; greedy speculative decoding is exact by construction, and its benefit depends on draft quality (a task-fine-tuned draft was needed for a 1.27$\times$ speedup), the draft/target cost ratio and per-pass overhead. Future work: class-balanced training or calibration for ``not enough information'', more seeds, and evaluation on real clinical notes.
