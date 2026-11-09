@@ -17,6 +17,8 @@
 % figure that compiles even before the file is uploaded
 \newcommand{\safegraphic}[2]{\IfFileExists{#2}{\includegraphics[width=#1]{#2}}{\fbox{\parbox{#1}{\centering\TODO{add #2}}}}}
 
+% let a tall two-column figure share a page with text (default 0.7)
+\renewcommand{\dbltopfraction}{0.85}
 \begin{document}
 
 \title{TrialMatch: Criterion-Level Clinical-Trial Eligibility with Cited Evidence, Explicit KV Caching, Tiled Attention and Speculative Decoding}
@@ -332,9 +334,9 @@ long & FT 0.5B & 6 & 0.456 & 3.74 & 6.82 & 18.8 & 0.87$\times$ \\
 
 \begin{figure*}[t]
 \centering
-\safegraphic{0.56\textwidth}{figures/app_screening.png}\hfill
-\safegraphic{0.42\textwidth}{figures/app_report.png}\\[6pt]
-\safegraphic{0.5\textwidth}{figures/app_lab.png}
+\safegraphic{0.5\textwidth}{figures/app_screening.png}\hfill
+\safegraphic{0.38\textwidth}{figures/app_report.png}\\[4pt]
+\safegraphic{0.42\textwidth}{figures/app_lab.png}
 \caption{Application. Top left: Screening tab on a held-out test patient (all five criteria agree with the expert labels, shown for comparison), with verbatim evidence, template explanations and the rule-based outcome. Top right: exported HTML report with provenance. Bottom: Inference Lab, live generation comparison (all three decoders token-identical) and attention comparison against a float64 reference.}
 \label{fig:app}
 \end{figure*}
