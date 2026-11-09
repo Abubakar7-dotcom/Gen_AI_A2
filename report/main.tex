@@ -347,7 +347,7 @@ The dataset is small (602 training rows, 37 patients) and skewed; with two ``exc
 A 1.5B open model fine-tuned with LoRA on 602 expert annotations learns criterion-level eligibility with cited evidence well enough to correct the base model's systematic polarity errors and to produce only valid outputs. Implementing the inference stack by hand made its costs explicit: KV caching gives exact outputs with linear memory and flat per-token cost; online-softmax tiling removes the quadratic memory but needs kernel fusion for speed; greedy speculative decoding is exact by construction, and its benefit depends on draft quality (a task-fine-tuned draft was needed for a 1.27$\times$ speedup), the draft/target cost ratio and per-pass overhead. Future work: class-balanced training or calibration for ``not enough information'', more seeds, and evaluation on real clinical notes.
 
 \appendix[AI-use statement]
-An AI coding assistant (Claude, Anthropic) was used to help write code, tests, documentation and drafts of this report. The author designed the study, ran all experiments, checked every reported number against the logged results in the repository, and takes responsibility for the content. \TODO{adjust to your course's required wording.}
+An AI coding assistant (Claude, Anthropic) was used to help write code, tests, documentation and drafts of this report. The author designed the study, ran all experiments, checked every reported number against the logged results in the repository, and takes responsibility for the content.
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
