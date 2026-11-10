@@ -44,6 +44,8 @@ TrialGPT~\cite{jin2024trialgpt} showed that GPT-4 can perform this criterion-lev
 
 \textbf{Contributions.} (1) A reproducible patient-level split and a leakage-free prompt that uses only the note, criterion type and criterion text. (2) LoRA fine-tuning with completion-only loss, compared before/after on identical rows, with three competing configurations selected on validation only. (3) Criterion-level evaluation of labels \emph{and} cited evidence, with stated rules for empty evidence sets. (4) Hand-written KV-cache decoding, tiled online-softmax attention and greedy speculative decoding, each verified for exactness and benchmarked. (5) A local browser application with evidence display, export and an inference laboratory.
 
+\textbf{Availability.} Source code, environment specification, trained LoRA adapters, the split manifest, all results and benchmark logs, and reproduction instructions: \url{https://github.com/Abubakar7-dotcom/Gen_AI_A2}. Demonstration video: \url{https://youtu.be/3Ysb4MRhmlE}.
+
 % =====================================================================
 \section{Related Work}
 \textbf{LLM-based trial matching.} TrialGPT~\cite{jin2024trialgpt} prompts GPT-4 per criterion to produce a relevance explanation, the relevant sentence IDs and an eligibility label, then aggregates criterion scores to rank trials; its criterion-level accuracy approached that of human experts. Our work keeps the per-criterion formulation and the sentence-ID evidence format but replaces the proprietary model by a fine-tuned 1.5B open model, uses the \emph{expert} labels as supervision, and explicitly avoids training on GPT-4 outputs. Unlike TrialGPT we do not rank trials; the overall outcome is a transparent rule over criterion labels.

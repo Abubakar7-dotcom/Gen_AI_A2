@@ -2,6 +2,8 @@
 
 > **Educational screening prototype — not a clinical enrollment decision tool.**
 
+**Demo video:** https://youtu.be/3Ysb4MRhmlE
+
 Given a patient note and one inclusion or exclusion criterion, a LoRA-fine-tuned
 **Qwen2.5-1.5B-Instruct** returns an eligibility label and the IDs of the patient sentences that
 support it. A local browser app screens a note against a whole criteria list, shows the cited
